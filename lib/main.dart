@@ -117,15 +117,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Analyzer',
+      title: 'Calculation',
       // theme: ThemeData(
       //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
       //   // useMaterial3: true,
       // ),
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green),
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.indigo),
       ),
-      home: const MyHomePage(title: 'Analyzer home page'),
+      home: const MyHomePage(title: 'Calculation home page'),
     );
   }
 }
@@ -139,7 +139,14 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-
+  // phind
+  Offset tapPosition = Offset(0, 0);
+  void handleTap(TapDownDetails details) {
+    setState(() {
+      tapPosition = details.localPosition;
+    });
+  }
+  // phind
 
   File? image;
   Future pickImage() async {
@@ -147,6 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
       final image = await ImagePicker().pickImage(source: ImageSource.gallery);
       if (image == null) return;
       final imageTemp = File(image.path);
+      // final imageProvider = FileImage(imageTemp); // phind
       setState(() => this.image = imageTemp);
     } on PlatformException catch(e) {
       print('Failed to pick image: $e');
@@ -158,14 +166,27 @@ class _MyHomePageState extends State<MyHomePage> {
       final image = await ImagePicker().pickImage(source: ImageSource.camera);
       if(image == null) return;
       final imageTemp = File(image.path);
+      // final imageProvider = FileImage(imageTemp);
       setState(() => this.image = imageTemp);
     } on PlatformException catch(e) {
       print('Failed to pick image: $e');
     }
   }
 
+  // phind
+  // final imageStream = imageProvider.resolve(ImageConfiguration());
+  // final Completer<ImageInfo> completer = Completer<ImageInfo>();
+  // imageStream.addListener(ImageStreamListener((ImageInfo info, bool _) {
+  //   if (!completer.isCompleted) {
+  //     completer.complete(info);
+  //   }
+  // }));
+  // final imageInfo = await completer.future;
+  // phind
+
+
   void delImage(File? image) {
-    // image = null;
+    image = null;
     // final imageTemp = File(image.path);
     setState(() => this.image = null);
   }
@@ -198,7 +219,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         // title: Text(widget.title),
-        title: Text('Analyzer'),
+        title: Text('Calculation'),
         centerTitle: true,
       ),
       // body: Padding(
@@ -220,7 +241,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   labelText: 'The first value',
                   hintText: 'Enter the start value',
                   // child: Text('First value'),
-                  border: OutlineInputBorder(),
+                  // border: OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.black,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                  )
                 ),
                 keyboardType: TextInputType.number,
                 inputFormatters: [
@@ -242,7 +269,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   // border: InputBorder.try,
                   labelText: 'The second value',
                   hintText: 'Enter the end value',
-                  border: OutlineInputBorder(),
+                  // border: OutlineInputBorder(),
+                  // borderRadius: BorderRadius.all(Radius.circular(15)),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                    )
                   // child: Text('First value'),
                 ),
                 keyboardType: TextInputType.number,
@@ -259,21 +293,148 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
 
               MaterialButton(
-                color: Colors.green,
-                child: const Text('Pick image from gallery'),
+                color: Colors.indigo,
+                // child: const Text('Pick image from gallery'),
+
                 onPressed: () {
                   pickImage();
                 },
+
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('Pick image from gallery', style: TextStyle(color: Colors.white)), // <-- Text
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Icon( // <-- Icon
+                      Icons.photo_library,
+                      color: Colors.white,
+                      size: 24.0,
+                    ),
+                  ],
+                ),
               ),
               MaterialButton(
-                color: Colors.green,
-                child: const Text('Pick image from camera'),
+                color: Colors.indigo,
+                // child: const Text('Pick image from camera'),
                 onPressed: () {
                   pickImageC();
                 },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('Pick image from camera', style: TextStyle(color: Colors.white)), // <-- Text
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Icon( // <-- Icon
+                      Icons.add_a_photo,
+                      color: Colors.white,
+                      size: 24.0,
+                    ),
+                  ],
+                ),
               ),
-              SizedBox(height: 100, child: image != null ? Image.file(image!): Text("No image selected"),),
+              GestureDetector(
+                // onTap: () {
+                //   setState(() {
+                //     // Toggle light when tapped.
+                //     _lightIsOn = !_lightIsOn;
+                //   });
+                // },
+                onTapDown: handleTap,
+                child: Stack(
+                  children: [
+                    SizedBox(
+                      height: 30,
+                      child: image != null ? Image.file(image!): Text("No image selected"),
+                    ),
+                    // image != null ? Image.file(image!): Text("No image selected"),
+                    if (tapPosition != null)
+                      Positioned(
+                        left: tapPosition.dx - 10,
+                        top: tapPosition.dy - 10,
+                        child: AnimatedContainer(
+                          duration: Duration(milliseconds: 300),
+                          width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.red.shade200,
+                          ),
+                        ),
+                      ),
+                  ],
+
+
+                  // height: 150,
+                  // color: Colors.yellow.shade600,
+                  // padding: const EdgeInsets.all(8),
+                  // // Change button text when light changes state.
+                  // child: image != null ? Image.file(image!): Text("No image selected"),
+                ),
+
+
+                // child: Container(
+                //   height: 150,
+                //   color: Colors.yellow.shade600,
+                //   padding: const EdgeInsets.all(8),
+                //   // Change button text when light changes state.
+                //   child: image != null ? Image.file(image!): Text("No image selected"),
+                // ),
+              ),
+              // SizedBox(height: 100, child: image != null ? Image.file(image!): Text("No image selected"),),
+
+              //phind
+              // SizedBox(
+              //   height: 100,
+              //   child: GestureDetector(
+              //     onTapDown: handleTap,
+              //     child: Center(
+              //       child: Stack(
+              //         children: [
+              //           // Image.asset('path/to/your/image.png'),
+              //           Image.file(image!),
+              //           if (tapPosition != null)
+              //             Positioned(
+              //               left: tapPosition.dx - 10,
+              //               top: tapPosition.dy - 10,
+              //               child: AnimatedContainer(
+              //                 duration: Duration(milliseconds: 300),
+              //                 width: 20,
+              //                 height: 20,
+              //                 decoration: BoxDecoration(
+              //                   shape: BoxShape.circle,
+              //                   color: Colors.red,
+              //                 ),
+              //               ),
+              //             ),
+              //         ],
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // phind
+
+
               // image != null ? Image.file(image!): Text("No image selected"),
+              MaterialButton(
+                color: Colors.indigo,
+                child: Text('Show me the image'),
+                onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          // height: 100,
+                          // content: Text(myControllerStart.text),
+                            content: image != null ? Image.file(image!) : Text('No image selected'),
+                        );
+                      },
+                    );
+                },
+              ),
               MaterialButton(
                 color: Colors.red,
                 child: const Icon(Icons.delete),
