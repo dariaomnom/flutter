@@ -105,6 +105,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:image/image.dart' as img;
 
 
 void main() {
@@ -140,7 +141,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   // phind
-  Offset tapPosition = Offset(0, 0);
+  Offset tapPosition = Offset(-10, -10);
   void handleTap(TapDownDetails details) {
     setState(() {
       tapPosition = details.localPosition;
@@ -229,222 +230,269 @@ class _MyHomePageState extends State<MyHomePage> {
       //   ),
       // ),
 
-        body: Padding(
-          padding: const EdgeInsets.all(30),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              TextField(
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.all(20.0),
-                  // border: InputBorder.try,
-                  labelText: 'The first value',
-                  hintText: 'Enter the start value',
-                  // child: Text('First value'),
-                  // border: OutlineInputBorder(),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.black,
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                  )
-                ),
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  // FilteringTextInputFormatter.allow(RegExp(r"^(0|[1-9]\d*)([.,]\d+)?")),
-                  // FilteringTextInputFormatter.allow(RegExp(r'^[-+]?[0-9]*[.,]?[0-9]+(?:[eE][-+]?[0-9]+)?$')),
-                  // FilteringTextInputFormatter.allow(RegExp(r'[0-9]+\.[0-9]+')),
-                  // FilteringTextInputFormatter.singleLineFormatter,
-                  // WhitelistingTextInputFormatter(RegExp(r"[0-9]+\.[0-9]+")),
-                ],
-                onChanged: (newVal) {
-                  startValue = newVal;
-                  // printVal(startValue);
-                },
-                controller: myControllerStart,
-              ),
-              TextField(
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.all(20.0),
-                  // border: InputBorder.try,
-                  labelText: 'The second value',
-                  hintText: 'Enter the end value',
-                  // border: OutlineInputBorder(),
-                  // borderRadius: BorderRadius.all(Radius.circular(15)),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(30),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextField(
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.all(20.0),
+                    // border: InputBorder.try,
+                    labelText: 'The first value',
+                    hintText: 'Enter the start value',
+                    // child: Text('First value'),
+                    // border: OutlineInputBorder(),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
                         color: Colors.black,
                       ),
                       borderRadius: BorderRadius.all(Radius.circular(15)),
                     )
-                  // child: Text('First value'),
-                ),
-                keyboardType: TextInputType.number,
-                // inputFormatters: [
-                //   FilteringTextInputFormatter.allow(RegExp(r'^[0-9]+\.[0-9]+')),
-                //   FilteringTextInputFormatter.singleLineFormatter,
-                //   // WhitelistingTextInputFormatter(RegExp(r"^[0-9]+\.[0-9]+")),
-                // ],
-                onChanged: (newVal) {
-                  endValue = newVal;
-                  // printVal(endValue);
-                },
-                controller: myControllerEnd,
-              ),
-
-              MaterialButton(
-                color: Colors.indigo,
-                // child: const Text('Pick image from gallery'),
-
-                onPressed: () {
-                  pickImage();
-                },
-
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('Pick image from gallery', style: TextStyle(color: Colors.white)), // <-- Text
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Icon( // <-- Icon
-                      Icons.photo_library,
-                      color: Colors.white,
-                      size: 24.0,
-                    ),
+                  ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    // FilteringTextInputFormatter.allow(RegExp(r"^(0|[1-9]\d*)([.,]\d+)?")),
+                    // FilteringTextInputFormatter.allow(RegExp(r'^[-+]?[0-9]*[.,]?[0-9]+(?:[eE][-+]?[0-9]+)?$')),
+                    // FilteringTextInputFormatter.allow(RegExp(r'[0-9]+\.[0-9]+')),
+                    // FilteringTextInputFormatter.singleLineFormatter,
+                    // WhitelistingTextInputFormatter(RegExp(r"[0-9]+\.[0-9]+")),
                   ],
+                  onChanged: (newVal) {
+                    startValue = newVal;
+                    // printVal(startValue);
+                  },
+                  controller: myControllerStart,
                 ),
-              ),
-              MaterialButton(
-                color: Colors.indigo,
-                // child: const Text('Pick image from camera'),
-                onPressed: () {
-                  pickImageC();
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('Pick image from camera', style: TextStyle(color: Colors.white)), // <-- Text
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Icon( // <-- Icon
-                      Icons.add_a_photo,
-                      color: Colors.white,
-                      size: 24.0,
-                    ),
-                  ],
-                ),
-              ),
-              GestureDetector(
-                // onTap: () {
-                //   setState(() {
-                //     // Toggle light when tapped.
-                //     _lightIsOn = !_lightIsOn;
-                //   });
-                // },
-                onTapDown: handleTap,
-                child: Stack(
-                  children: [
-                    SizedBox(
-                      height: 30,
-                      child: image != null ? Image.file(image!): Text("No image selected"),
-                    ),
-                    // image != null ? Image.file(image!): Text("No image selected"),
-                    if (tapPosition != null)
-                      Positioned(
-                        left: tapPosition.dx - 10,
-                        top: tapPosition.dy - 10,
-                        child: AnimatedContainer(
-                          duration: Duration(milliseconds: 300),
-                          width: 20,
-                          height: 20,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.red.shade200,
-                          ),
+                TextField(
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.all(20.0),
+                    // border: InputBorder.try,
+                    labelText: 'The second value',
+                    hintText: 'Enter the end value',
+                    // border: OutlineInputBorder(),
+                    // borderRadius: BorderRadius.all(Radius.circular(15)),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black,
                         ),
-                      ),
-                  ],
-
-
-                  // height: 150,
-                  // color: Colors.yellow.shade600,
-                  // padding: const EdgeInsets.all(8),
-                  // // Change button text when light changes state.
-                  // child: image != null ? Image.file(image!): Text("No image selected"),
+                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                      )
+                    // child: Text('First value'),
+                  ),
+                  keyboardType: TextInputType.number,
+                  // inputFormatters: [
+                  //   FilteringTextInputFormatter.allow(RegExp(r'^[0-9]+\.[0-9]+')),
+                  //   FilteringTextInputFormatter.singleLineFormatter,
+                  //   // WhitelistingTextInputFormatter(RegExp(r"^[0-9]+\.[0-9]+")),
+                  // ],
+                  onChanged: (newVal) {
+                    endValue = newVal;
+                    // printVal(endValue);
+                  },
+                  controller: myControllerEnd,
                 ),
 
+                MaterialButton(
+                  color: Colors.indigo,
+                  // child: const Text('Pick image from gallery'),
 
-                // child: Container(
-                //   height: 150,
-                //   color: Colors.yellow.shade600,
-                //   padding: const EdgeInsets.all(8),
-                //   // Change button text when light changes state.
-                //   child: image != null ? Image.file(image!): Text("No image selected"),
+                  onPressed: () {
+                    pickImage();
+                  },
+
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('Pick image from gallery', style: TextStyle(color: Colors.white)), // <-- Text
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Icon( // <-- Icon
+                        Icons.photo_library,
+                        color: Colors.white,
+                        size: 24.0,
+                      ),
+                    ],
+                  ),
+                ),
+                MaterialButton(
+                  color: Colors.indigo,
+                  // child: const Text('Pick image from camera'),
+                  onPressed: () {
+                    pickImageC();
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('Pick image from camera', style: TextStyle(color: Colors.white)), // <-- Text
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Icon( // <-- Icon
+                        Icons.add_a_photo,
+                        color: Colors.white,
+                        size: 24.0,
+                      ),
+                    ],
+                  ),
+                ),
+                image != null ? Text("The image is selected"): Text("No image selected"),
+                Container(
+                  margin: const EdgeInsets.all(10.0),
+                  color: Colors.amber[600],
+                  // height: 100,
+                  // width: 100,
+                  child: image != null ? Image.file(image!, fit: BoxFit.scaleDown): null,
+                ),
+                // image != null ? Image.file(image!, fit: BoxFit.scaleDown): Text("No image selected"),
+                // BoxFit.scaleDown
+                // GestureDetector()
+                // GestureDetector(
+                //   // onTap: () {
+                //   //   setState(() {
+                //   //     // Toggle light when tapped.
+                //   //     _lightIsOn = !_lightIsOn;
+                //   //   });
+                //   // },
+                //   onTapDown: handleTap,
+                //   child: Stack(
+                //     children: [
+                //       // SizedBox(
+                //       //   // height: 30,
+                //       //   child: image != null ? Text("The image is selected"): Text("No image selected"), // Image.file(image!)
+                //       // ),
+                //       // image != null ? Text("The image is selected"): Text("No image selected"),
+                //       // image != null ? Image.file(image!): Text("No image selected"),
+                //       if (tapPosition != null)
+                //         Positioned(
+                //           left: tapPosition.dx - 10,
+                //           top: tapPosition.dy - 10,
+                //           child: AnimatedContainer(
+                //             duration: Duration(milliseconds: 300),
+                //             width: 20,
+                //             height: 20,
+                //             decoration: BoxDecoration(
+                //               shape: BoxShape.circle,
+                //               color: Colors.red.shade200,
+                //             ),
+                //           ),
+                //         ),
+                //     ],
+                //
+                //
+                //     // height: 150,
+                //     // color: Colors.yellow.shade600,
+                //     // padding: const EdgeInsets.all(8),
+                //     // // Change button text when light changes state.
+                //     // child: image != null ? Image.file(image!): Text("No image selected"),
+                //   ),
+                //
+                //
+                //   // child: Container(
+                //   //   height: 150,
+                //   //   color: Colors.yellow.shade600,
+                //   //   padding: const EdgeInsets.all(8),
+                //   //   // Change button text when light changes state.
+                //   //   child: image != null ? Image.file(image!): Text("No image selected"),
+                //   // ),
                 // ),
-              ),
-              // SizedBox(height: 100, child: image != null ? Image.file(image!): Text("No image selected"),),
+                // SizedBox(height: 100, child: image != null ? Image.file(image!): Text("No image selected"),),
 
-              //phind
-              // SizedBox(
-              //   height: 100,
-              //   child: GestureDetector(
-              //     onTapDown: handleTap,
-              //     child: Center(
-              //       child: Stack(
-              //         children: [
-              //           // Image.asset('path/to/your/image.png'),
-              //           Image.file(image!),
-              //           if (tapPosition != null)
-              //             Positioned(
-              //               left: tapPosition.dx - 10,
-              //               top: tapPosition.dy - 10,
-              //               child: AnimatedContainer(
-              //                 duration: Duration(milliseconds: 300),
-              //                 width: 20,
-              //                 height: 20,
-              //                 decoration: BoxDecoration(
-              //                   shape: BoxShape.circle,
-              //                   color: Colors.red,
-              //                 ),
-              //               ),
-              //             ),
-              //         ],
-              //       ),
-              //     ),
-              //   ),
-              // ),
-              // phind
+                //phind
+                // SizedBox(
+                //   height: 100,
+                //   child: GestureDetector(
+                //     onTapDown: handleTap,
+                //     child: Center(
+                //       child: Stack(
+                //         children: [
+                //           // Image.asset('path/to/your/image.png'),
+                //           Image.file(image!),
+                //           if (tapPosition != null)
+                //             Positioned(
+                //               left: tapPosition.dx - 10,
+                //               top: tapPosition.dy - 10,
+                //               child: AnimatedContainer(
+                //                 duration: Duration(milliseconds: 300),
+                //                 width: 20,
+                //                 height: 20,
+                //                 decoration: BoxDecoration(
+                //                   shape: BoxShape.circle,
+                //                   color: Colors.red,
+                //                 ),
+                //               ),
+                //             ),
+                //         ],
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // phind
 
 
-              // image != null ? Image.file(image!): Text("No image selected"),
-              MaterialButton(
-                color: Colors.indigo,
-                child: Text('Show me the image'),
-                onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          // height: 100,
-                          // content: Text(myControllerStart.text),
-                            content: image != null ? Image.file(image!) : Text('No image selected'),
-                        );
-                      },
-                    );
-                },
-              ),
-              MaterialButton(
-                color: Colors.red,
-                child: const Icon(Icons.delete),
-                onPressed: () {
-                  // image = null;
-                  delImage(image);
-                },
-              ),
+                // image != null ? Image.file(image!): Text("No image selected"),
+                MaterialButton(
+                  color: Colors.indigo,
+                  child: Text('Show me the image'),
+                  onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return GestureDetector(
+                            onTapDown: handleTap,
+                            child: AlertDialog(
+                              // onTap: () {
+                              //   setState(() {
+                              //     // Toggle light when tapped.
+                              //     _lightIsOn = !_lightIsOn;
+                              //   });
+                              // },
+                              // onTapDown: handleTap,
+                              content: Stack(
+                                children: [
+                                  // GestureDetector(
+                                  //   onTapDown: handleTap,
+                                    image != null ? Image.file(image!) : Text('No image selected'),
+                                  // Image.file(image!),
+                                    if (tapPosition != null)
+                                      Positioned(
+                                        left: tapPosition.dx - 10,
+                                        top: tapPosition.dy - 10,
+                                        child: AnimatedContainer(
+                                          duration: Duration(milliseconds: 300),
+                                          width: 20,
+                                          height: 20,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.red.shade200,
+                                          ),
+                                        ),
+                                      ),
+                                  // ),
+                                ],
+                            ),
+                            // height: 100,
+                            // content: Text(myControllerStart.text),
+                            //   content: image != null ? Image.file(image!) : Text('No image selected'),
+                          ),
+                          );
+                        },
+                      );
+                  },
+                ),
+                MaterialButton(
+                  color: Colors.red,
+                  child: const Icon(Icons.delete),
+                  onPressed: () {
+                    // image = null;
+                    delImage(image);
+                  },
+                ),
 
-            ],
+              ],
+            ),
           ),
         ),
 
